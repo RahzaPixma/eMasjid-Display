@@ -1,0 +1,245 @@
+:root {
+  color-scheme: dark;
+  --green: #087a28;
+  --gold: #ffdf5c;
+  --blue: #041a57;
+  --black: #020403;
+  --white: #f8fff4;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+  color: var(--white);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.display {
+  position: relative;
+  min-height: 100vh;
+  padding: 2vh 2vw 1vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 1.2vh;
+  isolation: isolate;
+  background-image: linear-gradient(rgba(0, 20, 45, 0.25), rgba(0, 0, 0, 0.25)), var(--bg-image), linear-gradient(135deg, #074f91, #d7a21d);
+  background-size: cover;
+  background-position: center;
+}
+
+.display::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.45), transparent 35%, rgba(0, 0, 0, 0.45));
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+}
+
+.label {
+  margin: 0 0 0.2rem;
+  color: var(--gold);
+  font-size: clamp(0.9rem, 1.5vw, 1.6rem);
+  font-weight: 900;
+  text-shadow: 2px 2px #000;
+}
+
+h1 {
+  margin: 0;
+  color: #72ff5d;
+  font-size: clamp(1.8rem, 4vw, 4.5rem);
+  text-shadow: 3px 3px #001b06;
+}
+
+.datetime-card, .event-card, .countdown-card, .status-panel, .azan-overlay {
+  border: 0.25rem solid rgba(13, 145, 48, 0.85);
+  border-radius: 1rem;
+  background: rgba(5, 15, 65, 0.86);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.35);
+}
+
+.datetime-card {
+  min-width: min(32vw, 23rem);
+  padding: 0.7rem 1rem;
+  display: grid;
+  text-align: right;
+  color: var(--gold);
+}
+
+.datetime-card strong {
+  color: #8cff63;
+  font-size: clamp(1rem, 2vw, 2rem);
+}
+
+.datetime-card span {
+  font-size: clamp(1.6rem, 3.5vw, 4rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.datetime-card small { font-size: clamp(0.8rem, 1.4vw, 1.4rem); }
+
+.event-card {
+  justify-self: end;
+  align-self: start;
+  max-width: 24rem;
+  margin-top: 2vh;
+  padding: 1rem;
+  color: var(--gold);
+  display: grid;
+  gap: 0.25rem;
+  font-size: clamp(1rem, 1.6vw, 1.5rem);
+}
+
+.event-card strong { font-size: clamp(1.2rem, 2vw, 2.2rem); }
+
+.countdown-card {
+  justify-self: center;
+  align-self: center;
+  min-width: min(48rem, 90vw);
+  padding: 1rem 2rem;
+  text-align: center;
+  color: var(--gold);
+}
+
+.countdown-card strong {
+  display: block;
+  color: #8cff63;
+  font-size: clamp(2rem, 6vw, 6rem);
+  text-transform: uppercase;
+}
+
+.countdown-card small {
+  font-size: clamp(2rem, 5vw, 5rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.prayer-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+}
+
+.prayer-card {
+  overflow: hidden;
+  border: 0.15rem solid #021e08;
+  border-radius: 0.5rem;
+  text-align: center;
+  background: #e8e5ff;
+}
+
+.prayer-card span:first-child {
+  display: block;
+  padding: 0.35rem;
+  background: var(--green);
+  color: white;
+  font-size: clamp(0.85rem, 1.7vw, 1.9rem);
+  font-weight: 900;
+}
+
+.prayer-card span:last-child {
+  display: block;
+  padding: 0.3rem;
+  color: #141342;
+  font-size: clamp(1.1rem, 2.2vw, 2.5rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.prayer-card.active {
+  box-shadow: 0 0 0 0.35rem var(--gold) inset;
+}
+
+.notice-bar {
+  border-top: 0.25rem solid #111;
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--gold);
+  font-size: clamp(1rem, 2vw, 2.4rem);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.status-panel {
+  position: absolute;
+  left: 1rem;
+  bottom: 7rem;
+  width: min(22rem, calc(100vw - 2rem));
+  padding: 1rem;
+}
+.status-panel p { margin: 0; color: var(--gold); font-weight: 900; }
+
+.azan-overlay {
+  position: fixed;
+  inset: 8vh 8vw;
+  z-index: 10;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: rgba(2, 10, 48, 0.95);
+}
+
+.azan-overlay[hidden] { display: none; }
+.azan-overlay p { margin: 0; color: var(--gold); font-size: clamp(2rem, 5vw, 5rem); }
+.azan-overlay strong { color: #8cff63; font-size: clamp(3rem, 9vw, 9rem); }
+.azan-overlay span { color: white; font-size: clamp(1.5rem, 3vw, 3rem); }
+
+@media (max-width: 900px) {
+  body { overflow: auto; }
+  .display { min-height: 100svh; grid-template-rows: auto auto auto auto auto; }
+  .topbar { display: grid; }
+  .datetime-card, .event-card, .countdown-card { justify-self: stretch; min-width: auto; }
+  .prayer-strip { grid-template-columns: repeat(2, 1fr); }
+  .status-panel { position: static; width: 100%; order: 10; }
+}
+
+#mosqueName {
+  margin: 0.25rem 0 0;
+  color: var(--gold);
+  font-size: clamp(1rem, 2.2vw, 2.3rem);
+  text-shadow: 2px 2px #000;
+}
+
+.admin-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #8cff63;
+  font-weight: 900;
+}
+
+
+.media-stage {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+}
+.media-stage img, .media-stage video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.prayer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: linear-gradient(rgba(0, 0, 0, .35), rgba(0, 0, 0, .75)), var(--prayer-bg, linear-gradient(135deg, #05140f, #0b6b43));
+  background-size: cover;
+  background-position: center;
+}
+.prayer-overlay[hidden] { display: none; }
+.prayer-overlay p { margin: 0; color: var(--gold); font-size: clamp(2rem, 5vw, 5rem); font-weight: 900; }
+.prayer-overlay strong { color: white; font-size: clamp(3rem, 9vw, 10rem); text-shadow: 4px 4px #000; }

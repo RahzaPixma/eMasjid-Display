@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin eMasjid Display</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <header>
+      <div>
+        <p>Panel Admin</p>
+        <h1>Tetapan eMasjid Display</h1>
+      </div>
+      <a href="index.html">← Kembali ke paparan</a>
+    </header>
+
+    <form id="adminForm">
+      <section class="card">
+        <h2>Identiti & Sumber Waktu</h2>
+        <label>Nama masjid / surau <input id="mosqueName" required></label>
+        <label>Zon waktu solat negeri <select id="zone"></select></label>
+        <label>Sumber waktu solat
+          <select id="prayerSource">
+            <option value="jakim">Live e-Solat JAKIM</option>
+            <option value="manual">Manual</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>Waktu Manual</h2>
+        <div class="time-grid" id="manualTimes"></div>
+      </section>
+
+      <section class="card">
+        <h2>Slideshow & Audio</h2>
+        <label>Slider gambar/video (satu path/URL setiap baris, tiada had)
+          <textarea id="mediaSlides" rows="6" placeholder="assets/images/default.png
+assets/video/slide.mp4"></textarea>
+        </label>
+        <label>Tukar gambar/video setiap saat <input id="slideSeconds" type="number" min="5" max="3600"></label>
+        <label>Background sedang solat <input id="prayerBackground" placeholder="assets/images/praying.png"></label>
+        <label>Custom azan MP3 path/URL <input id="azanAudio" placeholder="assets/audio/azan.mp3"></label>
+        <label>Custom iqamat MP3 path/URL <input id="iqamatAudio" placeholder="assets/audio/iqamat.mp3"></label>
+      </section>
+
+      <section class="card">
+        <h2>Azan, Iqamah & Notis</h2>
+        <label>Minit sebelum azan untuk paparkan countdown <input id="preAzanMinutes" type="number" min="0" max="120"></label>
+        <label>Minit iqamah selepas azan <input id="iqamahMinutes" type="number" min="0" max="60"></label>
+        <label>Notis berjalan (satu notis setiap baris, tiada had) <textarea id="notices" rows="5"></textarea></label>
+        <label>Hari kebesaran / pengumuman Islam (format: tarikh | tajuk | countdown) <textarea id="events" rows="5" placeholder="17-6-2024 | Hari Raya Korban | 132 Hari Lagi"></textarea></label>
+        <label>Tempoh paparan sedang solat selepas iqamah (minit) <input id="prayerDurationMinutes" type="number" min="1" max="120"></label>
+      </section>
+
+      <div class="actions">
+        <button type="submit">Simpan tetapan</button>
+        <button type="button" id="resetButton">Reset default</button>
+        <output id="status"></output>
+      </div>
+    </form>
+  </main>
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jam Solat eMasjid</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="display">
+    <div id="mediaStage" class="media-stage" aria-hidden="true"></div>
+    <section class="topbar">
+      <div>
+        <p class="label">Zon Waktu Solat</p>
+        <h1 id="zoneName">Putrajaya</h1>
+        <h2 id="mosqueName">Masjid Putrajaya</h2>
+      </div>
+      <div class="datetime-card">
+        <strong id="dayName">--</strong>
+        <span id="clock">--:--:--</span>
+        <small id="gregorianDate">--</small>
+        <small id="hijriDate">--</small>
+      </div>
+    </section>
+
+    <section class="event-card" aria-live="polite">
+      <span id="eventDate">--</span>
+      <strong id="eventTitle">Pengumuman</strong>
+      <small id="eventCountdown">--</small>
+    </section>
+
+    <section class="countdown-card" aria-live="assertive">
+      <span id="countdownLabel">Waktu Solat Seterusnya</span>
+      <strong id="nextPrayer">--</strong>
+      <small id="countdown">--:--:--</small>
+    </section>
+
+    <section class="prayer-strip" id="prayerGrid" aria-label="Waktu solat hari ini"></section>
+
+    <section class="notice-bar" aria-label="Notis dan pengumuman">
+      <marquee id="noticeText">Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf</marquee>
+    </section>
+
+    <aside class="status-panel" aria-label="Status sistem">
+      <p id="syncStatus">Menyambung data JAKIM...</p>
+      <a class="admin-link" href="admin.html">Admin</a>
+    </aside>
+
+    <div class="prayer-overlay" id="prayerOverlay" hidden>
+      <p>Sedang Solat</p>
+      <strong id="prayerOverlayName">--</strong>
+    </div>
+
+    <div class="azan-overlay" id="azanOverlay" hidden>
+      <p>Telah masuk waktu</p>
+      <strong id="azanPrayer">--</strong>
+      <span id="iqamahCountdown">Iqamah dalam --:--</span>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
