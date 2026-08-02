@@ -12,7 +12,7 @@ Paparan web jam solat gaya TV masjid/surau dengan data waktu solat harian daripa
 - Notice berjalan untuk pesanan seperti “Sila senyapkan telefon anda”.
 - Ruang pengumuman kalendar Islam seperti Hari Raya, Ramadan, atau program masjid.
 - Page admin `admin.html` untuk ubah nama masjid, slideshow gambar/video tanpa had, sumber JAKIM/manual, zon negeri, custom azan Subuh, custom azan Zohor/Asar/Maghrib/Isyak, custom `iqamat.mp3`, iqamah, notis tanpa had, dan countdown 5 minit atau nilai custom sebelum azan.
-- Mode paparan normal waktu solat sahaja, slide zon solat lain seperti Mekah/Madinah/USA/Japan, slideshow gambar/video, countdown animasi tarikh penting Islam, countdown sebelum azan, countdown iqamah selepas azan, dan paparan “sedang solat” selepas iqamah.
+- Mode paparan utama kembali ringkas: jam, tarikh, waktu solat, countdown azan, iqamah, notis, dan paparan “sedang solat” selepas iqamah.
 - Folder khas `assets/images/`, `assets/video/`, dan `assets/audio/` untuk tukar gambar, video, azan, dan iqamat.
 
 ## Cara guna

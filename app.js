@@ -37,7 +37,6 @@ const defaultSettings = {
   iqamatAudio: "",
   prayerDurationMinutes: 10,
   manualTimes: { imsak: "06:16", fajr: "06:26", syuruk: "07:34", dhuha: "08:02", dhuhr: "13:35", asr: "16:55", maghrib: "19:30", isha: "20:42" },
-  worldZones: ["Mekah | 05:10 | 12:25 | 15:45 | 18:55 | 20:25", "Madinah | 05:05 | 12:20 | 15:40 | 18:50 | 20:20", "USA | Manual", "Japan | Manual"],
 };
 
 let settings = loadSettings();
@@ -48,7 +47,7 @@ let slideIndex = 0;
 
 const elements = {
   mosqueName: document.querySelector("#mosqueName"), zoneName: document.querySelector("#zoneName"), dayName: document.querySelector("#dayName"), clock: document.querySelector("#clock"),
-  gregorianDate: document.querySelector("#gregorianDate"), hijriDate: document.querySelector("#hijriDate"), eventDate: document.querySelector("#eventDate"), eventTitle: document.querySelector("#eventTitle"), eventCountdown: document.querySelector("#eventCountdown"), eventBigCountdown: document.querySelector("#eventBigCountdown"),
+  gregorianDate: document.querySelector("#gregorianDate"), hijriDate: document.querySelector("#hijriDate"), eventDate: document.querySelector("#eventDate"), eventTitle: document.querySelector("#eventTitle"), eventCountdown: document.querySelector("#eventCountdown"),
   nextPrayer: document.querySelector("#nextPrayer"), countdown: document.querySelector("#countdown"), countdownLabel: document.querySelector("#countdownLabel"), prayerGrid: document.querySelector("#prayerGrid"), noticeText: document.querySelector("#noticeText"),
   syncStatus: document.querySelector("#syncStatus"), mediaStage: document.querySelector("#mediaStage"), azanOverlay: document.querySelector("#azanOverlay"), azanPrayer: document.querySelector("#azanPrayer"), iqamahCountdown: document.querySelector("#iqamahCountdown"), prayerOverlay: document.querySelector("#prayerOverlay"), prayerOverlayName: document.querySelector("#prayerOverlayName"),
 };
@@ -78,7 +77,6 @@ function renderAnnouncement() {
   elements.eventDate.textContent = date;
   elements.eventTitle.textContent = title;
   elements.eventCountdown.textContent = countdown;
-  if (elements.eventBigCountdown) elements.eventBigCountdown.textContent = countdown || title;
 }
 
 function applySlide() {
@@ -263,29 +261,10 @@ function scheduleRefresh() {
   }, 1000);
 }
 
-function renderWorldZones() {
-  const world = document.querySelector("#worldTimes");
-  if (!world) return;
-  world.innerHTML = (settings.worldZones || []).map((line) => {
-    const [place, ...times] = line.split("|").map((part) => part.trim());
-    return `<article><strong>${place}</strong><span>${times.join(" • ")}</span></article>`;
-  }).join("");
-}
 
-function rotateDisplaySlides() {
-  const slides = [...document.querySelectorAll(".display-slide")];
-  if (!slides.length) return;
-  let index = 0;
-  setInterval(() => {
-    slides.forEach((slide, slideIndex) => slide.classList.toggle("show", slideIndex === index % slides.length));
-    index += 1;
-  }, Math.max(10, Number(settings.slideSeconds || 12)) * 1000);
-}
 
 window.emasjidDefaults = { zones, defaultSettings, prayerOrder, prayerLabels, settingsKey };
 applySettings();
-renderWorldZones();
-rotateDisplaySlides();
 startSlideshow();
 setInterval(tick, 1000);
 scheduleRefresh();
