@@ -25,10 +25,16 @@ const defaultSettings = {
   iqamahMinutes: 10,
   preAzanMinutes: 10,
   notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf",
+  notices: ["Sila senyapkan telefon anda", "Selamat datang ke masjid", "Lurus dan rapatkan saf"],
   announcement: "17-6-2024 | Hari Raya Korban | 132 Hari Lagi",
-  slideshowImages: ["assets/images/background.jpg"],
+  events: ["17-6-2024 | Hari Raya Korban | 132 Hari Lagi"],
+  slideshowImages: [],
+  mediaSlides: [],
+  prayerBackground: "",
   slideSeconds: 12,
   azanAudio: "",
+  iqamatAudio: "",
+  prayerDurationMinutes: 10,
   manualTimes: { imsak: "06:16", fajr: "06:26", syuruk: "07:34", dhuhr: "13:35", asr: "16:55", maghrib: "19:30", isha: "20:42" },
 };
 
@@ -42,7 +48,7 @@ const elements = {
   mosqueName: document.querySelector("#mosqueName"), zoneName: document.querySelector("#zoneName"), dayName: document.querySelector("#dayName"), clock: document.querySelector("#clock"),
   gregorianDate: document.querySelector("#gregorianDate"), hijriDate: document.querySelector("#hijriDate"), eventDate: document.querySelector("#eventDate"), eventTitle: document.querySelector("#eventTitle"), eventCountdown: document.querySelector("#eventCountdown"),
   nextPrayer: document.querySelector("#nextPrayer"), countdown: document.querySelector("#countdown"), countdownLabel: document.querySelector("#countdownLabel"), prayerGrid: document.querySelector("#prayerGrid"), noticeText: document.querySelector("#noticeText"),
-  syncStatus: document.querySelector("#syncStatus"), azanOverlay: document.querySelector("#azanOverlay"), azanPrayer: document.querySelector("#azanPrayer"), iqamahCountdown: document.querySelector("#iqamahCountdown"),
+  syncStatus: document.querySelector("#syncStatus"), mediaStage: document.querySelector("#mediaStage"), azanOverlay: document.querySelector("#azanOverlay"), azanPrayer: document.querySelector("#azanPrayer"), iqamahCountdown: document.querySelector("#iqamahCountdown"), prayerOverlay: document.querySelector("#prayerOverlay"), prayerOverlayName: document.querySelector("#prayerOverlayName"),
 };
 
 function loadSettings() {
@@ -58,21 +64,33 @@ function applySettings() {
   const zone = zones.find((item) => item.code === settings.zone) || zones[0];
   elements.mosqueName.textContent = settings.mosqueName;
   elements.zoneName.textContent = zone.name.split(",")[0];
-  elements.noticeText.textContent = settings.notice;
+  elements.noticeText.textContent = (settings.notices?.length ? settings.notices : [settings.notice]).join(" • ");
   renderAnnouncement();
+  if (settings.prayerBackground) document.querySelector(".display").style.setProperty("--prayer-bg", `url('${settings.prayerBackground}')`);
   applySlide();
 }
 
 function renderAnnouncement() {
-  const [date = "--", title = "Pengumuman", countdown = ""] = settings.announcement.split("|").map((part) => part.trim());
+  const eventLine = settings.events?.[0] || settings.announcement;
+  const [date = "--", title = "Pengumuman", countdown = ""] = eventLine.split("|").map((part) => part.trim());
   elements.eventDate.textContent = date;
   elements.eventTitle.textContent = title;
   elements.eventCountdown.textContent = countdown;
 }
 
 function applySlide() {
-  const slides = settings.slideshowImages?.filter(Boolean).length ? settings.slideshowImages.filter(Boolean) : defaultSettings.slideshowImages;
-  document.querySelector(".display").style.setProperty("--bg-image", `url('${slides[slideIndex % slides.length]}')`);
+  const slides = ((settings.mediaSlides?.length ? settings.mediaSlides : settings.slideshowImages) || []).filter(Boolean);
+  if (!slides.length) {
+    elements.mediaStage.innerHTML = "";
+    return;
+  }
+  const active = slides[slideIndex % slides.length];
+  elements.mediaStage.innerHTML = isVideo(active) ? `<video src="${active}" autoplay muted loop playsinline></video>` : `<img src="${active}" alt="">`;
+  document.querySelector(".display").style.setProperty("--bg-image", `url('${active}')`);
+}
+
+function isVideo(path) {
+  return /\.(mp4|webm|ogg)$/i.test(path);
 }
 
 function startSlideshow() {
@@ -175,13 +193,14 @@ function maybeTriggerAzan(now) {
 function showAzan(key) {
   elements.azanPrayer.textContent = prayerLabels[key];
   elements.azanOverlay.hidden = false;
-  playAzan();
-  startIqamahCountdown(Number(settings.iqamahMinutes || 0) * 60);
+  playSound(settings.azanAudio);
+  startIqamahCountdown(Number(settings.iqamahMinutes || 0) * 60, key);
 }
 
-function playAzan() {
-  if (settings.azanAudio) {
-    new Audio(settings.azanAudio).play();
+function playSound(source) {
+  if (source) {
+    const audio = new Audio(source);
+    audio.play();
     return;
   }
   const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -199,7 +218,7 @@ function playAzan() {
   oscillator.stop(context.currentTime + 2.5);
 }
 
-function startIqamahCountdown(seconds) {
+function startIqamahCountdown(seconds, prayerKey) {
   clearInterval(iqamahTimer);
   const endAt = Date.now() + seconds * 1000;
   iqamahTimer = setInterval(() => {
@@ -208,9 +227,19 @@ function startIqamahCountdown(seconds) {
     if (remaining === 0) {
       clearInterval(iqamahTimer);
       elements.iqamahCountdown.textContent = "Sila bangun untuk iqamah";
-      setTimeout(() => { elements.azanOverlay.hidden = true; }, 60_000);
+      playSound(settings.iqamatAudio);
+      setTimeout(() => {
+        elements.azanOverlay.hidden = true;
+        showPrayerMode(prayerKey);
+      }, 10_000);
     }
   }, 1000);
+}
+
+function showPrayerMode(prayerKey) {
+  elements.prayerOverlayName.textContent = prayerLabels[prayerKey];
+  elements.prayerOverlay.hidden = false;
+  setTimeout(() => { elements.prayerOverlay.hidden = true; }, Number(settings.prayerDurationMinutes || 10) * 60 * 1000);
 }
 
 function scheduleRefresh() {

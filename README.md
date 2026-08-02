@@ -11,16 +11,17 @@ Paparan web jam solat gaya TV masjid/surau dengan data waktu solat harian daripa
 - Paparan azan apabila masuk waktu solat dan countdown iqamah mengikut minit yang ditetapkan.
 - Notice berjalan untuk pesanan seperti “Sila senyapkan telefon anda”.
 - Ruang pengumuman kalendar Islam seperti Hari Raya, Ramadan, atau program masjid.
-- Page admin `admin.html` untuk ubah nama masjid, slideshow, sumber JAKIM/manual, zon negeri, custom azan, iqamah, notis, dan countdown sebelum azan.
-- Folder khas `assets/images/` untuk tukar gambar latar paparan.
+- Page admin `admin.html` untuk ubah nama masjid, slideshow gambar/video tanpa had, sumber JAKIM/manual, zon negeri, custom `azan.mp3`, custom `iqamat.mp3`, iqamah, notis tanpa had, dan countdown 5 minit atau nilai custom sebelum azan.
+- Mode paparan normal, slideshow, tarikh penting Islam, countdown sebelum azan, countdown iqamah selepas azan, dan paparan “sedang solat” selepas iqamah.
+- Folder khas `assets/images/`, `assets/video/`, dan `assets/audio/` untuk tukar gambar, video, azan, dan iqamat.
 
 ## Cara guna
 
 1. Buka `index.html` dalam pelayar web moden.
 2. Buka `admin.html` untuk tetapan penuh.
 3. Pilih zon masa/waktu solat negeri dan sama ada guna live JAKIM atau waktu manual.
-4. Tetapkan nama masjid, gambar slideshow, minit sebelum azan, custom audio azan, minit iqamah, notice, dan hari kebesaran.
-5. Letakkan gambar latar sendiri dalam `assets/images/` dan masukkan path gambar di page admin.
+4. Tetapkan nama masjid, gambar/video slideshow, minit sebelum azan, custom audio azan, custom audio iqamat, minit iqamah, tempoh sedang solat, notis, dan hari kebesaran.
+5. Fail media seperti `default.png`, `praying.png`, `azan.mp3`, dan `iqamat.mp3` tidak disertakan dalam repo; rujuk guide folder `assets/` untuk letak fail sendiri, kemudian masukkan path di page admin.
 
 > Nota: Sambungan internet diperlukan kerana waktu solat diambil daripada API e-Solat JAKIM.
 
@@ -62,3 +63,16 @@ sudo APP_PORT=8090 SERVICE_USER=pi bash scripts/install-raspberry-pi.sh
 # Install server sahaja tanpa Chromium kiosk
 sudo INSTALL_KIOSK=0 bash scripts/install-raspberry-pi.sh
 ```
+
+
+## Fail Media (Guide Sahaja)
+
+Repo ini tidak memasukkan fail `.png`, `.mp3`, atau video sebenar. Sediakan fail sendiri pada Raspberry Pi:
+
+- `assets/images/default.png` untuk paparan normal.
+- `assets/images/praying.png` untuk paparan sedang solat.
+- `assets/audio/azan.mp3` untuk audio azan custom.
+- `assets/audio/iqamat.mp3` untuk audio iqamat custom.
+- `assets/video/*.mp4` atau `assets/video/*.webm` untuk slideshow video.
+
+Selepas salin fail, buka `admin.html` dan masukkan path fail tersebut.

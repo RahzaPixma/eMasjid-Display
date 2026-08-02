@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="display" style="--bg-image: url('assets/images/background.jpg')">
+  <main class="display">
+    <div id="mediaStage" class="media-stage" aria-hidden="true"></div>
     <section class="topbar">
       <div>
         <p class="label">Zon Waktu Solat</p>
@@ -40,24 +41,15 @@
       <marquee id="noticeText">Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf</marquee>
     </section>
 
-    <aside class="settings" aria-label="Tetapan paparan">
-      <h2>Tetapan</h2>
-      <label>Zon masa
-        <select id="zoneSelect"></select>
-      </label>
-      <label>Minit iqamah selepas azan
-        <input id="iqamahMinutes" type="number" min="0" max="60" value="10">
-      </label>
-      <label>Notice berjalan
-        <input id="noticeInput" value="Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf">
-      </label>
-      <label>Pengumuman kalendar Islam
-        <textarea id="announcementInput" rows="3">17-6-2024 | Hari Raya Korban | 132 Hari Lagi</textarea>
-      </label>
-      <button id="saveSettings" type="button">Simpan</button>
+    <aside class="status-panel" aria-label="Status sistem">
       <p id="syncStatus">Menyambung data JAKIM...</p>
       <a class="admin-link" href="admin.html">Admin</a>
     </aside>
+
+    <div class="prayer-overlay" id="prayerOverlay" hidden>
+      <p>Sedang Solat</p>
+      <strong id="prayerOverlayName">--</strong>
+    </div>
 
     <div class="azan-overlay" id="azanOverlay" hidden>
       <p>Telah masuk waktu</p>

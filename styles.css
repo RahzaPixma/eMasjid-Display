@@ -61,7 +61,7 @@ h1 {
   text-shadow: 3px 3px #001b06;
 }
 
-.datetime-card, .event-card, .countdown-card, .settings, .azan-overlay {
+.datetime-card, .event-card, .countdown-card, .status-panel, .azan-overlay {
   border: 0.25rem solid rgba(13, 145, 48, 0.85);
   border-radius: 1rem;
   background: rgba(5, 15, 65, 0.86);
@@ -170,28 +170,14 @@ h1 {
   text-transform: uppercase;
 }
 
-.settings {
+.status-panel {
   position: absolute;
   left: 1rem;
   bottom: 7rem;
   width: min(22rem, calc(100vw - 2rem));
   padding: 1rem;
-  display: grid;
-  gap: 0.6rem;
 }
-
-.settings h2 { margin: 0; }
-.settings label { display: grid; gap: 0.25rem; font-weight: 700; }
-.settings input, .settings select, .settings textarea, .settings button {
-  width: 100%;
-  border: 0;
-  border-radius: 0.5rem;
-  padding: 0.6rem;
-  font: inherit;
-}
-.settings input, .settings select, .settings textarea { color: #111; background: #fff; }
-.settings button { color: #01240d; background: #8cff63; font-weight: 900; cursor: pointer; }
-.settings p { margin: 0; color: var(--gold); }
+.status-panel p { margin: 0; color: var(--gold); font-weight: 900; }
 
 .azan-overlay {
   position: fixed;
@@ -214,7 +200,7 @@ h1 {
   .topbar { display: grid; }
   .datetime-card, .event-card, .countdown-card { justify-self: stretch; min-width: auto; }
   .prayer-strip { grid-template-columns: repeat(2, 1fr); }
-  .settings { position: static; width: 100%; order: 10; }
+  .status-panel { position: static; width: 100%; order: 10; }
 }
 
 #mosqueName {
@@ -230,3 +216,30 @@ h1 {
   color: #8cff63;
   font-weight: 900;
 }
+
+
+.media-stage {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+}
+.media-stage img, .media-stage video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.prayer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: linear-gradient(rgba(0, 0, 0, .35), rgba(0, 0, 0, .75)), var(--prayer-bg, linear-gradient(135deg, #05140f, #0b6b43));
+  background-size: cover;
+  background-position: center;
+}
+.prayer-overlay[hidden] { display: none; }
+.prayer-overlay p { margin: 0; color: var(--gold); font-size: clamp(2rem, 5vw, 5rem); font-weight: 900; }
+.prayer-overlay strong { color: white; font-size: clamp(3rem, 9vw, 10rem); text-shadow: 4px 4px #000; }
