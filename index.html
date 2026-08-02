@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jam Solat eMasjid</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="display" style="--bg-image: url('assets/images/background.jpg')">
+    <section class="topbar">
+      <div>
+        <p class="label">Zon Waktu Solat</p>
+        <h1 id="zoneName">Putrajaya</h1>
+      </div>
+      <div class="datetime-card">
+        <strong id="dayName">--</strong>
+        <span id="clock">--:--:--</span>
+        <small id="gregorianDate">--</small>
+        <small id="hijriDate">--</small>
+      </div>
+    </section>
+
+    <section class="event-card" aria-live="polite">
+      <span id="eventDate">--</span>
+      <strong id="eventTitle">Pengumuman</strong>
+      <small id="eventCountdown">--</small>
+    </section>
+
+    <section class="countdown-card" aria-live="assertive">
+      <span id="countdownLabel">Waktu Solat Seterusnya</span>
+      <strong id="nextPrayer">--</strong>
+      <small id="countdown">--:--:--</small>
+    </section>
+
+    <section class="prayer-strip" id="prayerGrid" aria-label="Waktu solat hari ini"></section>
+
+    <section class="notice-bar" aria-label="Notis dan pengumuman">
+      <marquee id="noticeText">Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf</marquee>
+    </section>
+
+    <aside class="settings" aria-label="Tetapan paparan">
+      <h2>Tetapan</h2>
+      <label>Zon masa
+        <select id="zoneSelect"></select>
+      </label>
+      <label>Minit iqamah selepas azan
+        <input id="iqamahMinutes" type="number" min="0" max="60" value="10">
+      </label>
+      <label>Notice berjalan
+        <input id="noticeInput" value="Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf">
+      </label>
+      <label>Pengumuman kalendar Islam
+        <textarea id="announcementInput" rows="3">17-6-2024 | Hari Raya Korban | 132 Hari Lagi</textarea>
+      </label>
+      <button id="saveSettings" type="button">Simpan</button>
+      <p id="syncStatus">Menyambung data JAKIM...</p>
+    </aside>
+
+    <div class="azan-overlay" id="azanOverlay" hidden>
+      <p>Telah masuk waktu</p>
+      <strong id="azanPrayer">--</strong>
+      <span id="iqamahCountdown">Iqamah dalam --:--</span>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
