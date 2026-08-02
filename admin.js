@@ -10,13 +10,13 @@ const prayerLabels = { imsak: "Imsak", fajr: "Subuh", syuruk: "Syuruk", dhuha: "
 const settingsKey = "emasjid-display-settings";
 const defaults = {
   mosqueName: "Masjid Putrajaya", zone: "WLY01", prayerSource: "jakim", iqamahMinutes: 10, preAzanMinutes: 10,
-  notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf", notices: ["Sila senyapkan telefon anda", "Selamat datang ke masjid", "Lurus dan rapatkan saf"], announcement: "17-6-2024 | Hari Raya Korban | 132 Hari Lagi", events: ["17-6-2024 | Hari Raya Korban | 132 Hari Lagi"],
+  notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf", notices: ["Sila senyapkan telefon anda", "Selamat datang ke masjid", "Lurus dan rapatkan saf"], announcement: "17-6-2024 | Hari Raya Korban | 132 Hari Lagi", eventSource: "auto", eventAutoUrl: "https://www.e-solat.gov.my/index.php?siteId=24&pageId=26", events: ["17-6-2024 | Hari Raya Korban | 132 Hari Lagi"],
   slideshowImages: [], mediaSlides: [], prayerBackground: "", slideSeconds: 12, fajrAzanAudio: "", azanAudio: "", iqamatAudio: "", prayerDurationMinutes: 10, manualTimes: { imsak: "06:16", fajr: "06:26", syuruk: "07:34", dhuha: "08:02", dhuhr: "13:35", asr: "16:55", maghrib: "19:30", isha: "20:42" },
 };
 const form = document.querySelector("#adminForm");
 const manualTimes = document.querySelector("#manualTimes");
 const status = document.querySelector("#status");
-const fields = Object.fromEntries(["mosqueName", "zone", "prayerSource", "mediaSlides", "slideSeconds", "prayerBackground", "fajrAzanAudio", "azanAudio", "iqamatAudio", "preAzanMinutes", "iqamahMinutes", "notices", "events", "prayerDurationMinutes"].map((id) => [id, document.querySelector(`#${id}`)]));
+const fields = Object.fromEntries(["mosqueName", "zone", "prayerSource", "eventSource", "eventAutoUrl", "mediaSlides", "slideSeconds", "prayerBackground", "fajrAzanAudio", "azanAudio", "iqamatAudio", "preAzanMinutes", "iqamahMinutes", "notices", "events", "prayerDurationMinutes"].map((id) => [id, document.querySelector(`#${id}`)]));
 
 function readSettings() { return { ...defaults, ...JSON.parse(localStorage.getItem(settingsKey) || "{}") }; }
 function writeSettings(settings) { localStorage.setItem(settingsKey, JSON.stringify(settings)); }
@@ -26,7 +26,7 @@ function setup() {
   fillForm(readSettings());
 }
 function fillForm(settings) {
-  fields.mosqueName.value = settings.mosqueName; fields.zone.value = settings.zone; fields.prayerSource.value = settings.prayerSource; fields.slideSeconds.value = settings.slideSeconds;
+  fields.mosqueName.value = settings.mosqueName; fields.zone.value = settings.zone; fields.prayerSource.value = settings.prayerSource; fields.eventSource.value = settings.eventSource; fields.eventAutoUrl.value = settings.eventAutoUrl; fields.slideSeconds.value = settings.slideSeconds;
   fields.prayerBackground.value = settings.prayerBackground; fields.fajrAzanAudio.value = settings.fajrAzanAudio; fields.azanAudio.value = settings.azanAudio; fields.iqamatAudio.value = settings.iqamatAudio; fields.preAzanMinutes.value = settings.preAzanMinutes; fields.iqamahMinutes.value = settings.iqamahMinutes; fields.prayerDurationMinutes.value = settings.prayerDurationMinutes;
   fields.notices.value = (settings.notices || [settings.notice]).join("\n");
   fields.events.value = (settings.events || [settings.announcement]).join("\n");
@@ -35,7 +35,7 @@ function fillForm(settings) {
 }
 function collectForm() {
   return {
-    mosqueName: fields.mosqueName.value.trim(), zone: fields.zone.value, prayerSource: fields.prayerSource.value, slideSeconds: Number(fields.slideSeconds.value || 12), prayerBackground: fields.prayerBackground.value.trim(), fajrAzanAudio: fields.fajrAzanAudio.value.trim(), azanAudio: fields.azanAudio.value.trim(), iqamatAudio: fields.iqamatAudio.value.trim(),
+    mosqueName: fields.mosqueName.value.trim(), zone: fields.zone.value, prayerSource: fields.prayerSource.value, eventSource: fields.eventSource.value, eventAutoUrl: fields.eventAutoUrl.value.trim(), slideSeconds: Number(fields.slideSeconds.value || 12), prayerBackground: fields.prayerBackground.value.trim(), fajrAzanAudio: fields.fajrAzanAudio.value.trim(), azanAudio: fields.azanAudio.value.trim(), iqamatAudio: fields.iqamatAudio.value.trim(),
     preAzanMinutes: Number(fields.preAzanMinutes.value || 0), iqamahMinutes: Number(fields.iqamahMinutes.value || 0), prayerDurationMinutes: Number(fields.prayerDurationMinutes.value || 10),
     notices: fields.notices.value.split("\n").map((line) => line.trim()).filter(Boolean), events: fields.events.value.split("\n").map((line) => line.trim()).filter(Boolean),
     mediaSlides: fields.mediaSlides.value.split("\n").map((line) => line.trim()).filter(Boolean), manualTimes: Object.fromEntries(prayerOrder.map((key) => [key, document.querySelector(`#manual-${key}`).value])),
