@@ -5,18 +5,18 @@ const zones = [
   { state: "Pulau Pinang", code: "PNG01", name: "Pulau Pinang" }, { state: "Perak", code: "PRK02", name: "Ipoh, Batu Gajah, Kampar, Sungai Siput" }, { state: "Sabah", code: "SBH07", name: "Kota Kinabalu, Penampang, Putatan" },
   { state: "Sarawak", code: "SWK08", name: "Kuching, Bau, Lundu, Sematan" },
 ];
-const prayerOrder = ["imsak", "fajr", "syuruk", "dhuhr", "asr", "maghrib", "isha"];
-const prayerLabels = { imsak: "Imsak", fajr: "Subuh", syuruk: "Syuruk", dhuhr: "Zohor", asr: "Asar", maghrib: "Maghrib", isha: "Isyak" };
+const prayerOrder = ["imsak", "fajr", "syuruk", "dhuha", "dhuhr", "asr", "maghrib", "isha"];
+const prayerLabels = { imsak: "Imsak", fajr: "Subuh", syuruk: "Syuruk", dhuha: "Dhuha", dhuhr: "Zohor", asr: "Asar", maghrib: "Maghrib", isha: "Isyak" };
 const settingsKey = "emasjid-display-settings";
 const defaults = {
   mosqueName: "Masjid Putrajaya", zone: "WLY01", prayerSource: "jakim", iqamahMinutes: 10, preAzanMinutes: 10,
   notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf", notices: ["Sila senyapkan telefon anda", "Selamat datang ke masjid", "Lurus dan rapatkan saf"], announcement: "17-6-2024 | Hari Raya Korban | 132 Hari Lagi", events: ["17-6-2024 | Hari Raya Korban | 132 Hari Lagi"],
-  slideshowImages: [], mediaSlides: [], prayerBackground: "", slideSeconds: 12, azanAudio: "", iqamatAudio: "", prayerDurationMinutes: 10, manualTimes: { imsak: "06:16", fajr: "06:26", syuruk: "07:34", dhuhr: "13:35", asr: "16:55", maghrib: "19:30", isha: "20:42" },
+  slideshowImages: [], mediaSlides: [], prayerBackground: "", slideSeconds: 12, fajrAzanAudio: "", azanAudio: "", iqamatAudio: "", prayerDurationMinutes: 10, manualTimes: { imsak: "06:16", fajr: "06:26", syuruk: "07:34", dhuha: "08:02", dhuhr: "13:35", asr: "16:55", maghrib: "19:30", isha: "20:42" }, worldZones: ["Mekah | 05:10 | 12:25 | 15:45 | 18:55 | 20:25", "Madinah | 05:05 | 12:20 | 15:40 | 18:50 | 20:20", "USA | Manual", "Japan | Manual"],
 };
 const form = document.querySelector("#adminForm");
 const manualTimes = document.querySelector("#manualTimes");
 const status = document.querySelector("#status");
-const fields = Object.fromEntries(["mosqueName", "zone", "prayerSource", "mediaSlides", "slideSeconds", "prayerBackground", "azanAudio", "iqamatAudio", "preAzanMinutes", "iqamahMinutes", "notices", "events", "prayerDurationMinutes"].map((id) => [id, document.querySelector(`#${id}`)]));
+const fields = Object.fromEntries(["mosqueName", "zone", "prayerSource", "mediaSlides", "slideSeconds", "prayerBackground", "fajrAzanAudio", "azanAudio", "iqamatAudio", "preAzanMinutes", "iqamahMinutes", "notices", "events", "worldZones", "prayerDurationMinutes"].map((id) => [id, document.querySelector(`#${id}`)]));
 
 function readSettings() { return { ...defaults, ...JSON.parse(localStorage.getItem(settingsKey) || "{}") }; }
 function writeSettings(settings) { localStorage.setItem(settingsKey, JSON.stringify(settings)); }
@@ -27,17 +27,18 @@ function setup() {
 }
 function fillForm(settings) {
   fields.mosqueName.value = settings.mosqueName; fields.zone.value = settings.zone; fields.prayerSource.value = settings.prayerSource; fields.slideSeconds.value = settings.slideSeconds;
-  fields.prayerBackground.value = settings.prayerBackground; fields.azanAudio.value = settings.azanAudio; fields.iqamatAudio.value = settings.iqamatAudio; fields.preAzanMinutes.value = settings.preAzanMinutes; fields.iqamahMinutes.value = settings.iqamahMinutes; fields.prayerDurationMinutes.value = settings.prayerDurationMinutes;
+  fields.prayerBackground.value = settings.prayerBackground; fields.fajrAzanAudio.value = settings.fajrAzanAudio; fields.azanAudio.value = settings.azanAudio; fields.iqamatAudio.value = settings.iqamatAudio; fields.preAzanMinutes.value = settings.preAzanMinutes; fields.iqamahMinutes.value = settings.iqamahMinutes; fields.prayerDurationMinutes.value = settings.prayerDurationMinutes;
   fields.notices.value = (settings.notices || [settings.notice]).join("\n");
   fields.events.value = (settings.events || [settings.announcement]).join("\n");
+  fields.worldZones.value = (settings.worldZones || []).join("\n");
   fields.mediaSlides.value = (settings.mediaSlides || settings.slideshowImages || []).join("\n");
   prayerOrder.forEach((key) => { document.querySelector(`#manual-${key}`).value = settings.manualTimes[key]; });
 }
 function collectForm() {
   return {
-    mosqueName: fields.mosqueName.value.trim(), zone: fields.zone.value, prayerSource: fields.prayerSource.value, slideSeconds: Number(fields.slideSeconds.value || 12), prayerBackground: fields.prayerBackground.value.trim(), azanAudio: fields.azanAudio.value.trim(), iqamatAudio: fields.iqamatAudio.value.trim(),
+    mosqueName: fields.mosqueName.value.trim(), zone: fields.zone.value, prayerSource: fields.prayerSource.value, slideSeconds: Number(fields.slideSeconds.value || 12), prayerBackground: fields.prayerBackground.value.trim(), fajrAzanAudio: fields.fajrAzanAudio.value.trim(), azanAudio: fields.azanAudio.value.trim(), iqamatAudio: fields.iqamatAudio.value.trim(),
     preAzanMinutes: Number(fields.preAzanMinutes.value || 0), iqamahMinutes: Number(fields.iqamahMinutes.value || 0), prayerDurationMinutes: Number(fields.prayerDurationMinutes.value || 10),
-    notices: fields.notices.value.split("\n").map((line) => line.trim()).filter(Boolean), events: fields.events.value.split("\n").map((line) => line.trim()).filter(Boolean),
+    notices: fields.notices.value.split("\n").map((line) => line.trim()).filter(Boolean), events: fields.events.value.split("\n").map((line) => line.trim()).filter(Boolean), worldZones: fields.worldZones.value.split("\n").map((line) => line.trim()).filter(Boolean),
     mediaSlides: fields.mediaSlides.value.split("\n").map((line) => line.trim()).filter(Boolean), manualTimes: Object.fromEntries(prayerOrder.map((key) => [key, document.querySelector(`#manual-${key}`).value])),
   };
 }

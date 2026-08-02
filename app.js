@@ -13,9 +13,9 @@ const zones = [
   { state: "Sarawak", code: "SWK08", name: "Kuching, Bau, Lundu, Sematan" },
 ];
 
-const prayerOrder = ["imsak", "fajr", "syuruk", "dhuhr", "asr", "maghrib", "isha"];
+const prayerOrder = ["imsak", "fajr", "syuruk", "dhuha", "dhuhr", "asr", "maghrib", "isha"];
 const azanPrayerOrder = ["fajr", "dhuhr", "asr", "maghrib", "isha"];
-const prayerLabels = { imsak: "Imsak", fajr: "Subuh", syuruk: "Syuruk", dhuhr: "Zohor", asr: "Asar", maghrib: "Maghrib", isha: "Isyak" };
+const prayerLabels = { imsak: "Imsak", fajr: "Subuh", syuruk: "Syuruk", dhuha: "Dhuha", dhuhr: "Zohor", asr: "Asar", maghrib: "Maghrib", isha: "Isyak" };
 const settingsKey = "emasjid-display-settings";
 
 const defaultSettings = {
@@ -32,10 +32,12 @@ const defaultSettings = {
   mediaSlides: [],
   prayerBackground: "",
   slideSeconds: 12,
+  fajrAzanAudio: "",
   azanAudio: "",
   iqamatAudio: "",
   prayerDurationMinutes: 10,
-  manualTimes: { imsak: "06:16", fajr: "06:26", syuruk: "07:34", dhuhr: "13:35", asr: "16:55", maghrib: "19:30", isha: "20:42" },
+  manualTimes: { imsak: "06:16", fajr: "06:26", syuruk: "07:34", dhuha: "08:02", dhuhr: "13:35", asr: "16:55", maghrib: "19:30", isha: "20:42" },
+  worldZones: ["Mekah | 05:10 | 12:25 | 15:45 | 18:55 | 20:25", "Madinah | 05:05 | 12:20 | 15:40 | 18:50 | 20:20", "USA | Manual", "Japan | Manual"],
 };
 
 let settings = loadSettings();
@@ -46,7 +48,7 @@ let slideIndex = 0;
 
 const elements = {
   mosqueName: document.querySelector("#mosqueName"), zoneName: document.querySelector("#zoneName"), dayName: document.querySelector("#dayName"), clock: document.querySelector("#clock"),
-  gregorianDate: document.querySelector("#gregorianDate"), hijriDate: document.querySelector("#hijriDate"), eventDate: document.querySelector("#eventDate"), eventTitle: document.querySelector("#eventTitle"), eventCountdown: document.querySelector("#eventCountdown"),
+  gregorianDate: document.querySelector("#gregorianDate"), hijriDate: document.querySelector("#hijriDate"), eventDate: document.querySelector("#eventDate"), eventTitle: document.querySelector("#eventTitle"), eventCountdown: document.querySelector("#eventCountdown"), eventBigCountdown: document.querySelector("#eventBigCountdown"),
   nextPrayer: document.querySelector("#nextPrayer"), countdown: document.querySelector("#countdown"), countdownLabel: document.querySelector("#countdownLabel"), prayerGrid: document.querySelector("#prayerGrid"), noticeText: document.querySelector("#noticeText"),
   syncStatus: document.querySelector("#syncStatus"), mediaStage: document.querySelector("#mediaStage"), azanOverlay: document.querySelector("#azanOverlay"), azanPrayer: document.querySelector("#azanPrayer"), iqamahCountdown: document.querySelector("#iqamahCountdown"), prayerOverlay: document.querySelector("#prayerOverlay"), prayerOverlayName: document.querySelector("#prayerOverlayName"),
 };
@@ -76,6 +78,7 @@ function renderAnnouncement() {
   elements.eventDate.textContent = date;
   elements.eventTitle.textContent = title;
   elements.eventCountdown.textContent = countdown;
+  if (elements.eventBigCountdown) elements.eventBigCountdown.textContent = countdown || title;
 }
 
 function applySlide() {
@@ -124,10 +127,17 @@ async function loadPrayerTimes() {
   if (!item) throw new Error("Data waktu solat kosong");
 
   todayTimes = Object.fromEntries(prayerOrder.map((key) => [key, normalizeTime(item[key]) || settings.manualTimes[key]]));
+  todayTimes.dhuha = todayTimes.dhuha || addMinutes(todayTimes.syuruk, 28);
   elements.hijriDate.textContent = item.hijri || data.hijri || "Tarikh Hijrah tidak tersedia";
   elements.syncStatus.textContent = `Dikemas kini daripada JAKIM: ${new Date().toLocaleTimeString("ms-MY")}`;
   renderPrayerGrid();
   tick();
+}
+
+function addMinutes(time, minutes) {
+  const parsed = parseTime(time || "00:00");
+  parsed.setMinutes(parsed.getMinutes() + minutes);
+  return `${String(parsed.getHours()).padStart(2, "0")}:${String(parsed.getMinutes()).padStart(2, "0")}`;
 }
 
 function normalizeTime(value = "") {
@@ -170,7 +180,10 @@ function tick() {
   elements.countdownLabel.textContent = diff <= preAzanMs ? "Countdown Waktu Azan" : "Waktu Solat Seterusnya";
   elements.nextPrayer.textContent = prayerLabels[upcoming.key];
   elements.countdown.textContent = formatDuration(diff);
-  document.querySelectorAll(".prayer-card").forEach((card) => card.classList.toggle("active", card.dataset.prayer === upcoming.key));
+  document.querySelectorAll(".prayer-card").forEach((card) => {
+    card.classList.toggle("active", card.dataset.prayer === upcoming.key);
+    card.classList.toggle("blink", card.dataset.prayer === upcoming.key && diff <= preAzanMs);
+  });
   maybeTriggerAzan(now);
 }
 
@@ -193,7 +206,7 @@ function maybeTriggerAzan(now) {
 function showAzan(key) {
   elements.azanPrayer.textContent = prayerLabels[key];
   elements.azanOverlay.hidden = false;
-  playSound(settings.azanAudio);
+  playSound(key === "fajr" ? settings.fajrAzanAudio || settings.azanAudio : settings.azanAudio);
   startIqamahCountdown(Number(settings.iqamahMinutes || 0) * 60, key);
 }
 
@@ -250,8 +263,29 @@ function scheduleRefresh() {
   }, 1000);
 }
 
+function renderWorldZones() {
+  const world = document.querySelector("#worldTimes");
+  if (!world) return;
+  world.innerHTML = (settings.worldZones || []).map((line) => {
+    const [place, ...times] = line.split("|").map((part) => part.trim());
+    return `<article><strong>${place}</strong><span>${times.join(" • ")}</span></article>`;
+  }).join("");
+}
+
+function rotateDisplaySlides() {
+  const slides = [...document.querySelectorAll(".display-slide")];
+  if (!slides.length) return;
+  let index = 0;
+  setInterval(() => {
+    slides.forEach((slide, slideIndex) => slide.classList.toggle("show", slideIndex === index % slides.length));
+    index += 1;
+  }, Math.max(10, Number(settings.slideSeconds || 12)) * 1000);
+}
+
 window.emasjidDefaults = { zones, defaultSettings, prayerOrder, prayerLabels, settingsKey };
 applySettings();
+renderWorldZones();
+rotateDisplaySlides();
 startSlideshow();
 setInterval(tick, 1000);
 scheduleRefresh();

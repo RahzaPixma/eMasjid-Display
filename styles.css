@@ -127,7 +127,7 @@ h1 {
 
 .prayer-strip {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 0.3rem;
 }
 
@@ -243,3 +243,25 @@ h1 {
 .prayer-overlay[hidden] { display: none; }
 .prayer-overlay p { margin: 0; color: var(--gold); font-size: clamp(2rem, 5vw, 5rem); font-weight: 900; }
 .prayer-overlay strong { color: white; font-size: clamp(3rem, 9vw, 10rem); text-shadow: 4px 4px #000; }
+
+
+.display-slide {
+  position: absolute;
+  inset: 20vh 6vw auto;
+  min-height: 18vh;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, .58);
+  opacity: 0;
+  transform: translateY(1rem);
+  transition: opacity .6s ease, transform .6s ease;
+  pointer-events: none;
+}
+.display-slide.show { opacity: 1; transform: translateY(0); }
+.slide-title { margin: 0 0 .75rem; color: var(--gold); font-size: clamp(1.2rem, 2.2vw, 2.6rem); font-weight: 900; text-transform: uppercase; }
+.world-times { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+.world-times article { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem; border-radius: .7rem; background: rgba(255,255,255,.12); color: white; font-size: clamp(.9rem, 1.5vw, 1.6rem); }
+#eventBigCountdown { color: #8cff63; font-size: clamp(3rem, 8vw, 9rem); animation: numberPulse 1.2s infinite; }
+.prayer-card.blink { animation: prayerBlink .8s steps(2, jump-none) infinite; }
+@keyframes prayerBlink { 50% { filter: brightness(1.8); transform: scale(1.03); } }
+@keyframes numberPulse { 50% { transform: scale(1.06); color: var(--gold); } }
