@@ -1,0 +1,18 @@
+[Unit]
+Description=eMasjid Display Chromium kiosk
+After=graphical.target emasjid-display.service
+Wants=emasjid-display.service
+
+[Service]
+Type=simple
+User=pi
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+ExecStartPre=/bin/sh -c 'xset -display :0 s off -dpms || true'
+ExecStartPre=/bin/sh -c 'unclutter -display :0 -idle 1 -root &'
+ExecStart=/usr/bin/chromium-browser --kiosk --noerrdialogs --disable-infobars --disable-session-crashed-bubble --check-for-update-interval=31536000 http://127.0.0.1:8080/index.html
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=graphical.target
