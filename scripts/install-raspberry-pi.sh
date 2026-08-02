@@ -4,7 +4,7 @@ set -euo pipefail
 APP_NAME="emasjid-display"
 APP_DIR="${APP_DIR:-/opt/emasjid-display}"
 APP_PORT="${APP_PORT:-8080}"
-CHROMIUM_BIN="${CHROMIUM_BIN:-/usr/bin/chromium-browser}"
+CHROMIUM_BIN="${CHROMIUM_BIN:-}"
 SERVICE_USER="${SERVICE_USER:-pi}"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 INSTALL_KIOSK="${INSTALL_KIOSK:-1}"
@@ -31,9 +31,14 @@ install_packages() {
   apt-get update
   apt-get install -y python3 rsync unclutter x11-xserver-utils
   if [[ "${INSTALL_KIOSK}" == "1" ]]; then
-    apt-get install -y chromium-browser || apt-get install -y chromium
-    if [[ ! -x "${CHROMIUM_BIN}" && -x /usr/bin/chromium ]]; then
-      CHROMIUM_BIN=/usr/bin/chromium
+    apt-get install -y chromium-browser || apt-get install -y chromium || apt-get install -y chromium-chromedriver chromium
+    if command -v chromium-browser >/dev/null 2>&1; then
+      CHROMIUM_BIN="$(command -v chromium-browser)"
+    elif command -v chromium >/dev/null 2>&1; then
+      CHROMIUM_BIN="$(command -v chromium)"
+    else
+      echo "Chromium tidak dijumpai selepas install. Semak apt repository Raspberry Pi OS." >&2
+      exit 1
     fi
   fi
 }

@@ -11,14 +11,16 @@ Paparan web jam solat gaya TV masjid/surau dengan data waktu solat harian daripa
 - Paparan azan apabila masuk waktu solat dan countdown iqamah mengikut minit yang ditetapkan.
 - Notice berjalan untuk pesanan seperti “Sila senyapkan telefon anda”.
 - Ruang pengumuman kalendar Islam seperti Hari Raya, Ramadan, atau program masjid.
+- Page admin `admin.html` untuk ubah nama masjid, slideshow, sumber JAKIM/manual, zon negeri, custom azan, iqamah, notis, dan countdown sebelum azan.
 - Folder khas `assets/images/` untuk tukar gambar latar paparan.
 
 ## Cara guna
 
 1. Buka `index.html` dalam pelayar web moden.
-2. Pilih zon masa/waktu solat yang betul dalam panel **Tetapan**.
-3. Tetapkan minit iqamah, notice, dan pengumuman kalendar Islam.
-4. Letakkan gambar latar sendiri sebagai `assets/images/background.jpg` jika mahu menukar gambar paparan.
+2. Buka `admin.html` untuk tetapan penuh.
+3. Pilih zon masa/waktu solat negeri dan sama ada guna live JAKIM atau waktu manual.
+4. Tetapkan nama masjid, gambar slideshow, minit sebelum azan, custom audio azan, minit iqamah, notice, dan hari kebesaran.
+5. Letakkan gambar latar sendiri dalam `assets/images/` dan masukkan path gambar di page admin.
 
 > Nota: Sambungan internet diperlukan kerana waktu solat diambil daripada API e-Solat JAKIM.
 
@@ -26,7 +28,7 @@ Paparan web jam solat gaya TV masjid/surau dengan data waktu solat harian daripa
 
 Installer ini sesuai untuk Raspberry Pi OS Desktop pada Raspberry Pi 5. Ia akan:
 
-- pasang dependency asas (`python3`, `rsync`, `unclutter`, `x11-xserver-utils`, dan Chromium),
+- pasang dependency asas (`python3`, `rsync`, `unclutter`, `x11-xserver-utils`, dan Chromium) serta sahkan binary Chromium wujud,
 - salin aplikasi ke `/opt/emasjid-display`,
 - cipta service `emasjid-display` untuk web server tempatan,
 - cipta service `emasjid-display-kiosk` untuk buka Chromium fullscreen selepas boot,

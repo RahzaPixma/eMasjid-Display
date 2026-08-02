@@ -216,3 +216,17 @@ h1 {
   .prayer-strip { grid-template-columns: repeat(2, 1fr); }
   .settings { position: static; width: 100%; order: 10; }
 }
+
+#mosqueName {
+  margin: 0.25rem 0 0;
+  color: var(--gold);
+  font-size: clamp(1rem, 2.2vw, 2.3rem);
+  text-shadow: 2px 2px #000;
+}
+
+.admin-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #8cff63;
+  font-weight: 900;
+}

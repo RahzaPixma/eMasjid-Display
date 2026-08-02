@@ -1,101 +1,66 @@
 const zones = [
-  { code: "WLY01", name: "Putrajaya / Kuala Lumpur" },
-  { code: "SGR01", name: "Gombak, Petaling, Sepang, Hulu Langat, Hulu Selangor, Shah Alam" },
-  { code: "SGR02", name: "Sabak Bernam, Kuala Selangor" },
-  { code: "SGR03", name: "Klang, Kuala Langat" },
-  { code: "JHR02", name: "Johor Bahru, Kota Tinggi, Mersing" },
-  { code: "KDH01", name: "Kota Setar, Kubang Pasu, Pokok Sena" },
-  { code: "KTN01", name: "Kota Bharu, Bachok, Pasir Puteh, Tumpat" },
-  { code: "MLK01", name: "Melaka" },
-  { code: "PNG01", name: "Pulau Pinang" },
-  { code: "PRK02", name: "Ipoh, Batu Gajah, Kampar, Sungai Siput" },
-  { code: "SBH07", name: "Kota Kinabalu, Penampang, Putatan" },
-  { code: "SWK08", name: "Kuching, Bau, Lundu, Sematan" },
+  { state: "W.Persekutuan", code: "WLY01", name: "Putrajaya / Kuala Lumpur" },
+  { state: "Selangor", code: "SGR01", name: "Gombak, Petaling, Sepang, Hulu Langat, Hulu Selangor, Shah Alam" },
+  { state: "Selangor", code: "SGR02", name: "Sabak Bernam, Kuala Selangor" },
+  { state: "Selangor", code: "SGR03", name: "Klang, Kuala Langat" },
+  { state: "Johor", code: "JHR02", name: "Johor Bahru, Kota Tinggi, Mersing" },
+  { state: "Kedah", code: "KDH01", name: "Kota Setar, Kubang Pasu, Pokok Sena" },
+  { state: "Kelantan", code: "KTN01", name: "Kota Bharu, Bachok, Pasir Puteh, Tumpat" },
+  { state: "Melaka", code: "MLK01", name: "Melaka" },
+  { state: "Pulau Pinang", code: "PNG01", name: "Pulau Pinang" },
+  { state: "Perak", code: "PRK02", name: "Ipoh, Batu Gajah, Kampar, Sungai Siput" },
+  { state: "Sabah", code: "SBH07", name: "Kota Kinabalu, Penampang, Putatan" },
+  { state: "Sarawak", code: "SWK08", name: "Kuching, Bau, Lundu, Sematan" },
 ];
 
 const prayerOrder = ["imsak", "fajr", "syuruk", "dhuhr", "asr", "maghrib", "isha"];
+const azanPrayerOrder = ["fajr", "dhuhr", "asr", "maghrib", "isha"];
 const prayerLabels = { imsak: "Imsak", fajr: "Subuh", syuruk: "Syuruk", dhuhr: "Zohor", asr: "Asar", maghrib: "Maghrib", isha: "Isyak" };
-const jakimFields = { imsak: "imsak", fajr: "fajr", syuruk: "syuruk", dhuhr: "dhuhr", asr: "asr", maghrib: "maghrib", isha: "isha" };
 const settingsKey = "emasjid-display-settings";
+
+const defaultSettings = {
+  mosqueName: "Masjid Putrajaya",
+  zone: "WLY01",
+  prayerSource: "jakim",
+  iqamahMinutes: 10,
+  preAzanMinutes: 10,
+  notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf",
+  announcement: "17-6-2024 | Hari Raya Korban | 132 Hari Lagi",
+  slideshowImages: ["assets/images/background.jpg"],
+  slideSeconds: 12,
+  azanAudio: "",
+  manualTimes: { imsak: "06:16", fajr: "06:26", syuruk: "07:34", dhuhr: "13:35", asr: "16:55", maghrib: "19:30", isha: "20:42" },
+};
 
 let settings = loadSettings();
 let todayTimes = {};
 let lastAzanKey = "";
 let iqamahTimer;
+let slideIndex = 0;
 
 const elements = {
-  zoneName: document.querySelector("#zoneName"),
-  zoneSelect: document.querySelector("#zoneSelect"),
-  dayName: document.querySelector("#dayName"),
-  clock: document.querySelector("#clock"),
-  gregorianDate: document.querySelector("#gregorianDate"),
-  hijriDate: document.querySelector("#hijriDate"),
-  eventDate: document.querySelector("#eventDate"),
-  eventTitle: document.querySelector("#eventTitle"),
-  eventCountdown: document.querySelector("#eventCountdown"),
-  nextPrayer: document.querySelector("#nextPrayer"),
-  countdown: document.querySelector("#countdown"),
-  prayerGrid: document.querySelector("#prayerGrid"),
-  noticeText: document.querySelector("#noticeText"),
-  noticeInput: document.querySelector("#noticeInput"),
-  announcementInput: document.querySelector("#announcementInput"),
-  iqamahMinutes: document.querySelector("#iqamahMinutes"),
-  saveSettings: document.querySelector("#saveSettings"),
-  syncStatus: document.querySelector("#syncStatus"),
-  azanOverlay: document.querySelector("#azanOverlay"),
-  azanPrayer: document.querySelector("#azanPrayer"),
-  iqamahCountdown: document.querySelector("#iqamahCountdown"),
+  mosqueName: document.querySelector("#mosqueName"), zoneName: document.querySelector("#zoneName"), dayName: document.querySelector("#dayName"), clock: document.querySelector("#clock"),
+  gregorianDate: document.querySelector("#gregorianDate"), hijriDate: document.querySelector("#hijriDate"), eventDate: document.querySelector("#eventDate"), eventTitle: document.querySelector("#eventTitle"), eventCountdown: document.querySelector("#eventCountdown"),
+  nextPrayer: document.querySelector("#nextPrayer"), countdown: document.querySelector("#countdown"), countdownLabel: document.querySelector("#countdownLabel"), prayerGrid: document.querySelector("#prayerGrid"), noticeText: document.querySelector("#noticeText"),
+  syncStatus: document.querySelector("#syncStatus"), azanOverlay: document.querySelector("#azanOverlay"), azanPrayer: document.querySelector("#azanPrayer"), iqamahCountdown: document.querySelector("#iqamahCountdown"),
 };
 
 function loadSettings() {
-  const fallback = {
-    zone: "WLY01",
-    iqamahMinutes: 10,
-    notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf",
-    announcement: "17-6-2024 | Hari Raya Korban | 132 Hari Lagi",
-  };
-  return { ...fallback, ...JSON.parse(localStorage.getItem(settingsKey) || "{}") };
+  return { ...defaultSettings, ...JSON.parse(localStorage.getItem(settingsKey) || "{}") };
 }
 
-function saveSettings() {
-  settings = {
-    zone: elements.zoneSelect.value,
-    iqamahMinutes: Number(elements.iqamahMinutes.value || 0),
-    notice: elements.noticeInput.value.trim(),
-    announcement: elements.announcementInput.value.trim(),
-  };
+function saveSettings(nextSettings) {
+  settings = { ...defaultSettings, ...nextSettings };
   localStorage.setItem(settingsKey, JSON.stringify(settings));
-  applySettings();
-  fetchPrayerTimes();
 }
 
 function applySettings() {
   const zone = zones.find((item) => item.code === settings.zone) || zones[0];
+  elements.mosqueName.textContent = settings.mosqueName;
   elements.zoneName.textContent = zone.name.split(",")[0];
   elements.noticeText.textContent = settings.notice;
-  elements.noticeInput.value = settings.notice;
-  elements.announcementInput.value = settings.announcement;
-  elements.iqamahMinutes.value = settings.iqamahMinutes;
-  elements.zoneSelect.value = zone.code;
   renderAnnouncement();
-}
-
-function setupZones() {
-  elements.zoneSelect.innerHTML = zones.map((zone) => `<option value="${zone.code}">${zone.code} - ${zone.name}</option>`).join("");
-}
-
-function formatClock(date) {
-  return date.toLocaleTimeString("ms-MY", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true });
-}
-
-function formatDate(date) {
-  return date.toLocaleDateString("ms-MY", { day: "2-digit", month: "short", year: "numeric" });
-}
-
-function renderDate(now = new Date()) {
-  elements.dayName.textContent = now.toLocaleDateString("ms-MY", { weekday: "long" });
-  elements.clock.textContent = formatClock(now);
-  elements.gregorianDate.textContent = formatDate(now);
+  applySlide();
 }
 
 function renderAnnouncement() {
@@ -105,21 +70,42 @@ function renderAnnouncement() {
   elements.eventCountdown.textContent = countdown;
 }
 
+function applySlide() {
+  const slides = settings.slideshowImages?.filter(Boolean).length ? settings.slideshowImages.filter(Boolean) : defaultSettings.slideshowImages;
+  document.querySelector(".display").style.setProperty("--bg-image", `url('${slides[slideIndex % slides.length]}')`);
+}
+
+function startSlideshow() {
+  applySlide();
+  setInterval(() => {
+    slideIndex += 1;
+    applySlide();
+  }, Math.max(5, Number(settings.slideSeconds || 12)) * 1000);
+}
+
 function getApiUrl() {
   const params = new URLSearchParams({ r: "esolatApi/takwimsolat", period: "today", zone: settings.zone });
   return `https://www.e-solat.gov.my/index.php?${params}`;
 }
 
-async function fetchPrayerTimes() {
-  elements.syncStatus.textContent = "Menyambung data rasmi JAKIM...";
+async function loadPrayerTimes() {
+  if (settings.prayerSource === "manual") {
+    todayTimes = { ...settings.manualTimes };
+    elements.hijriDate.textContent = "Manual";
+    elements.syncStatus.textContent = "Menggunakan waktu solat manual daripada admin.";
+    renderPrayerGrid();
+    tick();
+    return;
+  }
+
+  elements.syncStatus.textContent = "Menyambung data rasmi e-Solat JAKIM...";
   const response = await fetch(getApiUrl(), { cache: "no-store" });
   if (!response.ok) throw new Error("JAKIM API gagal dicapai");
-
   const data = await response.json();
   const item = data.prayerTime?.[0];
   if (!item) throw new Error("Data waktu solat kosong");
 
-  todayTimes = Object.fromEntries(prayerOrder.map((key) => [key, normalizeTime(item[jakimFields[key]])]));
+  todayTimes = Object.fromEntries(prayerOrder.map((key) => [key, normalizeTime(item[key]) || settings.manualTimes[key]]));
   elements.hijriDate.textContent = item.hijri || data.hijri || "Tarikh Hijrah tidak tersedia";
   elements.syncStatus.textContent = `Dikemas kini daripada JAKIM: ${new Date().toLocaleTimeString("ms-MY")}`;
   renderPrayerGrid();
@@ -138,11 +124,7 @@ function parseTime(time) {
 }
 
 function getUpcomingPrayer(now = new Date()) {
-  const candidates = prayerOrder
-    .filter((key) => key !== "imsak" && key !== "syuruk")
-    .map((key) => ({ key, time: parseTime(todayTimes[key]) }))
-    .filter((item) => item.time > now);
-
+  const candidates = azanPrayerOrder.map((key) => ({ key, time: parseTime(todayTimes[key]) })).filter((item) => item.time > now);
   if (candidates.length) return candidates[0];
   const fajrTomorrow = parseTime(todayTimes.fajr || "00:00");
   fajrTomorrow.setDate(fajrTomorrow.getDate() + 1);
@@ -150,12 +132,13 @@ function getUpcomingPrayer(now = new Date()) {
 }
 
 function renderPrayerGrid() {
-  elements.prayerGrid.innerHTML = prayerOrder.map((key) => `
-    <article class="prayer-card" data-prayer="${key}">
-      <span>${prayerLabels[key]}</span>
-      <span>${todayTimes[key] || "--:--"}</span>
-    </article>
-  `).join("");
+  elements.prayerGrid.innerHTML = prayerOrder.map((key) => `<article class="prayer-card" data-prayer="${key}"><span>${prayerLabels[key]}</span><span>${todayTimes[key] || "--:--"}</span></article>`).join("");
+}
+
+function renderDate(now = new Date()) {
+  elements.dayName.textContent = now.toLocaleDateString("ms-MY", { weekday: "long" });
+  elements.clock.textContent = now.toLocaleTimeString("ms-MY", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true });
+  elements.gregorianDate.textContent = now.toLocaleDateString("ms-MY", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function tick() {
@@ -165,6 +148,8 @@ function tick() {
 
   const upcoming = getUpcomingPrayer(now);
   const diff = Math.max(0, upcoming.time - now);
+  const preAzanMs = Number(settings.preAzanMinutes || 0) * 60 * 1000;
+  elements.countdownLabel.textContent = diff <= preAzanMs ? "Countdown Waktu Azan" : "Waktu Solat Seterusnya";
   elements.nextPrayer.textContent = prayerLabels[upcoming.key];
   elements.countdown.textContent = formatDuration(diff);
   document.querySelectorAll(".prayer-card").forEach((card) => card.classList.toggle("active", card.dataset.prayer === upcoming.key));
@@ -179,11 +164,8 @@ function formatDuration(ms) {
 }
 
 function maybeTriggerAzan(now) {
-  const current = prayerOrder
-    .filter((key) => !["imsak", "syuruk"].includes(key))
-    .find((key) => todayTimes[key] === `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}` && now.getSeconds() === 0);
-
-  const azanKey = `${formatDate(now)}-${current}`;
+  const current = azanPrayerOrder.find((key) => todayTimes[key] === `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}` && now.getSeconds() === 0);
+  const azanKey = `${now.toDateString()}-${current}`;
   if (current && azanKey !== lastAzanKey) {
     lastAzanKey = azanKey;
     showAzan(current);
@@ -193,11 +175,15 @@ function maybeTriggerAzan(now) {
 function showAzan(key) {
   elements.azanPrayer.textContent = prayerLabels[key];
   elements.azanOverlay.hidden = false;
-  playAzanTone();
-  startIqamahCountdown(settings.iqamahMinutes * 60);
+  playAzan();
+  startIqamahCountdown(Number(settings.iqamahMinutes || 0) * 60);
 }
 
-function playAzanTone() {
+function playAzan() {
+  if (settings.azanAudio) {
+    new Audio(settings.azanAudio).play();
+    return;
+  }
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   if (!AudioContext) return;
   const context = new AudioContext();
@@ -227,20 +213,22 @@ function startIqamahCountdown(seconds) {
   }, 1000);
 }
 
-function scheduleDailyRefresh() {
-  setInterval(fetchPrayerTimes, 60 * 60 * 1000);
+function scheduleRefresh() {
+  setInterval(loadPrayerTimes, 60 * 60 * 1000);
   setInterval(() => {
     const now = new Date();
-    if (now.getHours() === 0 && now.getMinutes() === 5 && now.getSeconds() === 0) fetchPrayerTimes();
+    if (now.getHours() === 0 && now.getMinutes() === 5 && now.getSeconds() === 0) loadPrayerTimes();
   }, 1000);
 }
 
-elements.saveSettings.addEventListener("click", saveSettings);
-setupZones();
+window.emasjidDefaults = { zones, defaultSettings, prayerOrder, prayerLabels, settingsKey };
 applySettings();
+startSlideshow();
 setInterval(tick, 1000);
-scheduleDailyRefresh();
-fetchPrayerTimes().catch((error) => {
-  elements.syncStatus.textContent = `${error.message}. Semak internet atau cuba zon lain.`;
+scheduleRefresh();
+loadPrayerTimes().catch((error) => {
+  todayTimes = { ...settings.manualTimes };
+  elements.syncStatus.textContent = `${error.message}. Fallback kepada waktu manual.`;
+  renderPrayerGrid();
 });
 tick();
