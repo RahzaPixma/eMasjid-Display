@@ -1,0 +1,25 @@
+name: ChatGPT PR Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    
+    # Grant explicit Read / Write permissions to GITHUB_TOKEN
+    permissions:
+      contents: read         # Allows reading repo code
+      pull-requests: write   # Allows ChatGPT to post PR comments
+      issues: write          # Allows ChatGPT to create or comment on issues
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Example ChatGPT / OpenAI action step
+      - name: Run ChatGPT PR Review
+        uses: ChatGPT-PR-Reviewer-Action@v1  # Replace with your action name
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
