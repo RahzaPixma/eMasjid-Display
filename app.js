@@ -26,10 +26,10 @@ const defaultSettings = {
   preAzanMinutes: 10,
   notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf",
   notices: ["Sila senyapkan telefon anda", "Selamat datang ke masjid", "Lurus dan rapatkan saf"],
-  announcement: "17-6-2024 | Hari Raya Korban | 132 Hari Lagi",
+  announcement: "25 Ogos 2026 | Maulidur Rasul",
   eventSource: "auto",
   eventAutoUrl: "https://www.e-solat.gov.my/index.php?siteId=24&pageId=26",
-  events: ["17-6-2024 | Hari Raya Korban | 132 Hari Lagi"],
+  events: ["25 Ogos 2026 | Maulidur Rasul"],
   slideshowImages: [],
   mediaSlides: [],
   prayerBackground: "",
@@ -87,11 +87,10 @@ function getNextIslamicEvent(eventLines = []) {
 }
 
 function parseEventLine(line) {
-  const [dateLabel = "", title = "Pengumuman", manualCountdown = ""] = String(line).split("|").map((part) => part.trim());
+  const [dateLabel = "", title = "Pengumuman"] = String(line).split("|").map((part) => part.trim());
   if (!dateLabel && !title) return null;
   const date = parseMalayDate(dateLabel);
-  const countdown = date ? buildDateCountdown(date) : manualCountdown;
-  return { date, dateLabel, title, countdown };
+  return { date, dateLabel, title, countdown: date ? buildDateCountdown(date) : "" };
 }
 
 function parseMalayDate(value = "") {
@@ -131,18 +130,36 @@ async function loadIslamicEvents() {
 
 function parseIslamicCalendarHtml(html) {
   const doc = new DOMParser().parseFromString(html, "text/html");
-  const tableEvents = [...doc.querySelectorAll("tr")].map((row) => {
-    const cells = [...row.querySelectorAll("td")].map((cell) => cell.textContent.replace(/\s+/g, " ").trim());
-    if (cells.length < 3 || !parseMalayDate(cells[1])) return "";
-    return `${cells[1]} | ${cells[2].replace(/^\*/, "")} |`;
-  }).filter(Boolean);
+  const tableEvents = [...doc.querySelectorAll("table")].flatMap(parseIslamicCalendarTable).filter(Boolean);
   if (tableEvents.length) return tableEvents;
 
   return doc.body.textContent.split("\n").map((line) => line.replace(/\s+/g, " ").trim()).map((line) => {
     const match = line.match(/\b(\d{1,2}\s+(?:Januari|Februari|Mac|April|Mei|Jun|Julai|Ogos|September|Oktober|November|Disember)\s+\d{4})\b\s+\*?(.+)$/i);
     if (!match || !parseMalayDate(match[1])) return "";
-    return `${match[1]} | ${match[2].trim()} |`;
+    return formatIslamicEvent(match[1], match[2]);
   }).filter(Boolean);
+}
+
+function parseIslamicCalendarTable(table) {
+  const headers = [...table.querySelectorAll("th")].map((cell) => normalizeTableText(cell.textContent));
+  const miladiIndex = headers.findIndex((header) => header.includes("tarikh miladi"));
+  const eventIndex = headers.findIndex((header) => header.includes("hari perayaan") || header.includes("kebesaran islam"));
+
+  return [...table.querySelectorAll("tr")].map((row) => {
+    const cells = [...row.querySelectorAll("td")].map((cell) => cell.textContent.replace(/\s+/g, " ").trim());
+    const miladi = cells[miladiIndex >= 0 ? miladiIndex : 1];
+    const eventName = cells[eventIndex >= 0 ? eventIndex : 2];
+    if (!miladi || !eventName || !parseMalayDate(miladi)) return "";
+    return formatIslamicEvent(miladi, eventName);
+  });
+}
+
+function normalizeTableText(value = "") {
+  return value.replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function formatIslamicEvent(miladi, eventName) {
+  return `${miladi.trim()} | ${eventName.replace(/^\*/, "").trim()}`;
 }
 
 function applySlide() {

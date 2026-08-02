@@ -82,5 +82,5 @@ Selepas salin fail, buka `admin.html` dan masukkan path fail tersebut.
 
 Admin boleh pilih sumber tarikh penting Islam:
 
-- `Auto dari link kalendar Islam`: aplikasi akan baca jadual daripada link e-Solat JAKIM default atau link custom yang dimasukkan admin, kemudian pilih tarikh akan datang terdekat dan kira countdown secara automatik.
-- `Tarikh Manual`: admin masukkan satu event setiap baris dengan format `tarikh | tajuk | countdown optional`. Jika tarikh boleh dibaca seperti `25 Ogos 2026` atau `25-8-2026`, countdown dikira automatik; jika tidak, teks countdown manual akan digunakan.
+- `Auto dari link kalendar Islam`: aplikasi akan baca jadual daripada link e-Solat JAKIM default atau link custom yang dimasukkan admin, ambil kolum `Tarikh Miladi` dan `Hari Perayaan / Kebesaran Islam`, kemudian pilih tarikh akan datang terdekat dan kira countdown secara automatik.
+- `Tarikh Manual`: admin masukkan satu event setiap baris dengan format `Tarikh Miladi | Hari Perayaan / Kebesaran Islam`, contohnya `25 Ogos 2026 | Maulidur Rasul`. Countdown akan dikira automatik daripada Tarikh Miladi tersebut.

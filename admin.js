@@ -10,7 +10,7 @@ const prayerLabels = { imsak: "Imsak", fajr: "Subuh", syuruk: "Syuruk", dhuha: "
 const settingsKey = "emasjid-display-settings";
 const defaults = {
   mosqueName: "Masjid Putrajaya", zone: "WLY01", prayerSource: "jakim", iqamahMinutes: 10, preAzanMinutes: 10,
-  notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf", notices: ["Sila senyapkan telefon anda", "Selamat datang ke masjid", "Lurus dan rapatkan saf"], announcement: "17-6-2024 | Hari Raya Korban | 132 Hari Lagi", eventSource: "auto", eventAutoUrl: "https://www.e-solat.gov.my/index.php?siteId=24&pageId=26", events: ["17-6-2024 | Hari Raya Korban | 132 Hari Lagi"],
+  notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf", notices: ["Sila senyapkan telefon anda", "Selamat datang ke masjid", "Lurus dan rapatkan saf"], announcement: "25 Ogos 2026 | Maulidur Rasul", eventSource: "auto", eventAutoUrl: "https://www.e-solat.gov.my/index.php?siteId=24&pageId=26", events: ["25 Ogos 2026 | Maulidur Rasul"],
   slideshowImages: [], mediaSlides: [], prayerBackground: "", slideSeconds: 12, fajrAzanAudio: "", azanAudio: "", iqamatAudio: "", prayerDurationMinutes: 10, manualTimes: { imsak: "06:16", fajr: "06:26", syuruk: "07:34", dhuha: "08:02", dhuhr: "13:35", asr: "16:55", maghrib: "19:30", isha: "20:42" },
 };
 const form = document.querySelector("#adminForm");
