@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jam Solat eMasjid</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="display-shell">
+    <section class="hero" aria-label="Paparan jam solat">
+      <p class="kicker">eMasjid Display</p>
+      <h1>Jam Solat</h1>
+      <div class="clock" id="clock">--:--:--</div>
+      <p class="date" id="date">Memuatkan tarikh...</p>
+      <div class="next-prayer" aria-live="polite">
+        <span>Solat seterusnya</span>
+        <strong id="nextPrayer">--</strong>
+        <small id="countdown">--:--:--</small>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Tetapan lokasi dan waktu solat">
+      <form id="locationForm" class="location-form">
+        <label>
+          Bandar
+          <input id="city" name="city" value="Kuala Lumpur" autocomplete="address-level2">
+        </label>
+        <label>
+          Negara
+          <input id="country" name="country" value="Malaysia" autocomplete="country-name">
+        </label>
+        <button type="submit">Kemas kini</button>
+      </form>
+      <button id="geoButton" class="secondary" type="button">Guna lokasi semasa</button>
+      <p class="status" id="status">Waktu solat dipaparkan untuk Kuala Lumpur, Malaysia.</p>
+      <div class="prayer-grid" id="prayerGrid"></div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
