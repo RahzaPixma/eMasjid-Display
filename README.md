@@ -10,7 +10,7 @@ Paparan web jam solat gaya TV masjid/surau dengan data waktu solat harian daripa
 - Sambungan live kepada endpoint e-Solat JAKIM dan refresh automatik setiap jam serta selepas tengah malam supaya waktu solat dikemas kini setiap hari.
 - Paparan azan apabila masuk waktu solat dan countdown iqamah mengikut minit yang ditetapkan.
 - Notice berjalan untuk pesanan seperti “Sila senyapkan telefon anda”.
-- Ruang pengumuman kalendar Islam seperti Hari Raya, Ramadan, atau program masjid.
+- Ruang pengumuman kalendar Islam dengan countdown automatik daripada link e-Solat JAKIM atau tarikh manual admin.
 - Page admin `admin.html` untuk ubah nama masjid, slideshow gambar/video tanpa had, sumber JAKIM/manual, zon negeri, custom azan Subuh, custom azan Zohor/Asar/Maghrib/Isyak, custom `iqamat.mp3`, iqamah, notis tanpa had, dan countdown 5 minit atau nilai custom sebelum azan.
 - Mode paparan utama kembali ringkas: jam, tarikh, waktu solat, countdown azan, iqamah, notis, dan paparan “sedang solat” selepas iqamah.
 - Folder khas `assets/images/`, `assets/video/`, dan `assets/audio/` untuk tukar gambar, video, azan, dan iqamat.
@@ -20,7 +20,7 @@ Paparan web jam solat gaya TV masjid/surau dengan data waktu solat harian daripa
 1. Buka `index.html` dalam pelayar web moden.
 2. Buka `admin.html` untuk tetapan penuh.
 3. Pilih zon masa/waktu solat negeri dan sama ada guna live JAKIM atau waktu manual.
-4. Tetapkan nama masjid, gambar/video slideshow, minit sebelum azan, custom audio azan Subuh, custom audio azan solat lain, custom audio iqamat, minit iqamah, tempoh sedang solat, notis, dan hari kebesaran.
+4. Tetapkan nama masjid, gambar/video slideshow, minit sebelum azan, custom audio azan Subuh, custom audio azan solat lain, custom audio iqamat, minit iqamah, tempoh sedang solat, notis, serta tarikh penting Islam auto/manual.
 5. Fail media seperti `default.png`, `praying.png`, `azan.mp3`, dan `iqamat.mp3` tidak disertakan dalam repo; rujuk guide folder `assets/` untuk letak fail sendiri, kemudian masukkan path di page admin.
 
 > Nota: Sambungan internet diperlukan kerana waktu solat diambil daripada API e-Solat JAKIM.
@@ -77,3 +77,10 @@ Repo ini tidak memasukkan fail `.png`, `.mp3`, atau video sebenar. Sediakan fail
 - `assets/video/*.mp4` atau `assets/video/*.webm` untuk slideshow video.
 
 Selepas salin fail, buka `admin.html` dan masukkan path fail tersebut.
+
+## Tarikh Penting Islam
+
+Admin boleh pilih sumber tarikh penting Islam:
+
+- `Auto dari link kalendar Islam`: aplikasi akan baca jadual daripada link e-Solat JAKIM default atau link custom yang dimasukkan admin, kemudian pilih tarikh akan datang terdekat dan kira countdown secara automatik.
+- `Tarikh Manual`: admin masukkan satu event setiap baris dengan format `tarikh | tajuk | countdown optional`. Jika tarikh boleh dibaca seperti `25 Ogos 2026` atau `25-8-2026`, countdown dikira automatik; jika tidak, teks countdown manual akan digunakan.

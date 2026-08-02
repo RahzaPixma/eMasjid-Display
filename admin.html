@@ -52,7 +52,14 @@ assets/video/slide.mp4"></textarea>
         <label>Minit sebelum azan untuk paparkan countdown <input id="preAzanMinutes" type="number" min="0" max="120"></label>
         <label>Minit iqamah selepas azan <input id="iqamahMinutes" type="number" min="0" max="60"></label>
         <label>Notis berjalan (satu notis setiap baris, tiada had) <textarea id="notices" rows="5"></textarea></label>
-        <label>Hari kebesaran / pengumuman Islam (format: tarikh | tajuk | countdown) <textarea id="events" rows="5" placeholder="17-6-2024 | Hari Raya Korban | 132 Hari Lagi"></textarea></label>
+        <label>Sumber tarikh penting Islam
+          <select id="eventSource">
+            <option value="auto">Auto dari link kalendar Islam</option>
+            <option value="manual">Tarikh Manual</option>
+          </select>
+        </label>
+        <label>Link auto kalendar Islam <input id="eventAutoUrl" placeholder="https://www.e-solat.gov.my/index.php?siteId=24&pageId=26"></label>
+        <label>Tarikh penting Islam manual (format: tarikh | tajuk | countdown optional) <textarea id="events" rows="5" placeholder="17-6-2024 | Hari Raya Korban | 132 Hari Lagi"></textarea></label>
         <label>Tempoh paparan sedang solat selepas iqamah (minit) <input id="prayerDurationMinutes" type="number" min="1" max="120"></label>
       </section>
 
