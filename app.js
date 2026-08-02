@@ -26,8 +26,10 @@ const defaultSettings = {
   preAzanMinutes: 10,
   notice: "Sila senyapkan telefon anda • Selamat datang ke masjid • Lurus dan rapatkan saf",
   notices: ["Sila senyapkan telefon anda", "Selamat datang ke masjid", "Lurus dan rapatkan saf"],
-  announcement: "17-6-2024 | Hari Raya Korban | 132 Hari Lagi",
-  events: ["17-6-2024 | Hari Raya Korban | 132 Hari Lagi"],
+  announcement: "25 Ogos 2026 | Maulidur Rasul",
+  eventSource: "auto",
+  eventAutoUrl: "https://www.e-solat.gov.my/index.php?siteId=24&pageId=26",
+  events: ["25 Ogos 2026 | Maulidur Rasul"],
   slideshowImages: [],
   mediaSlides: [],
   prayerBackground: "",
@@ -72,11 +74,92 @@ function applySettings() {
 }
 
 function renderAnnouncement() {
-  const eventLine = settings.events?.[0] || settings.announcement;
-  const [date = "--", title = "Pengumuman", countdown = ""] = eventLine.split("|").map((part) => part.trim());
-  elements.eventDate.textContent = date;
-  elements.eventTitle.textContent = title;
-  elements.eventCountdown.textContent = countdown;
+  const event = getNextIslamicEvent(settings.events || [settings.announcement]);
+  elements.eventDate.textContent = event?.dateLabel || "--";
+  elements.eventTitle.textContent = event?.title || "Pengumuman";
+  elements.eventCountdown.textContent = event?.countdown || "--";
+}
+
+function getNextIslamicEvent(eventLines = []) {
+  const events = eventLines.map(parseEventLine).filter(Boolean).sort((a, b) => (a.date || Infinity) - (b.date || Infinity));
+  const today = startOfDay(new Date());
+  return events.find((event) => event.date && event.date >= today) || events[0];
+}
+
+function parseEventLine(line) {
+  const [dateLabel = "", title = "Pengumuman"] = String(line).split("|").map((part) => part.trim());
+  if (!dateLabel && !title) return null;
+  const date = parseMalayDate(dateLabel);
+  return { date, dateLabel, title, countdown: date ? buildDateCountdown(date) : "" };
+}
+
+function parseMalayDate(value = "") {
+  const cleaned = value.replace(/^[A-Za-z]+,?\s+/i, "").trim();
+  const numeric = cleaned.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+  if (numeric) return new Date(Number(numeric[3]), Number(numeric[2]) - 1, Number(numeric[1]));
+  const months = { januari: 0, feb: 1, februari: 1, mac: 2, mar: 2, april: 3, apr: 3, mei: 4, jun: 5, julai: 6, jul: 6, ogos: 7, september: 8, sep: 8, oktober: 9, okt: 9, november: 10, nov: 10, disember: 11, dis: 11 };
+  const text = cleaned.toLowerCase().match(/^(\d{1,2})\s+([a-z]+)\s+(\d{4})$/);
+  if (!text || !(text[2] in months)) return null;
+  return new Date(Number(text[3]), months[text[2]], Number(text[1]));
+}
+
+function startOfDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function buildDateCountdown(date) {
+  const days = Math.ceil((startOfDay(date) - startOfDay(new Date())) / 86_400_000);
+  if (days === 0) return "Hari Ini";
+  if (days === 1) return "Esok";
+  if (days > 1) return `${days} Hari Lagi`;
+  return `${Math.abs(days)} Hari Lepas`;
+}
+
+async function loadIslamicEvents() {
+  if (settings.eventSource !== "auto") return;
+  const url = settings.eventAutoUrl || defaultSettings.eventAutoUrl;
+  elements.eventCountdown.textContent = "Muat turun kalendar Islam...";
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error("Kalendar Islam gagal dicapai");
+  const html = await response.text();
+  const parsedEvents = parseIslamicCalendarHtml(html);
+  if (!parsedEvents.length) throw new Error("Kalendar Islam kosong");
+  settings.events = parsedEvents;
+  renderAnnouncement();
+}
+
+function parseIslamicCalendarHtml(html) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const tableEvents = [...doc.querySelectorAll("table")].flatMap(parseIslamicCalendarTable).filter(Boolean);
+  if (tableEvents.length) return tableEvents;
+
+  return doc.body.textContent.split("\n").map((line) => line.replace(/\s+/g, " ").trim()).map((line) => {
+    const match = line.match(/\b(\d{1,2}\s+(?:Januari|Februari|Mac|April|Mei|Jun|Julai|Ogos|September|Oktober|November|Disember)\s+\d{4})\b\s+\*?(.+)$/i);
+    if (!match || !parseMalayDate(match[1])) return "";
+    return formatIslamicEvent(match[1], match[2]);
+  }).filter(Boolean);
+}
+
+function parseIslamicCalendarTable(table) {
+  const headers = [...table.querySelectorAll("th")].map((cell) => normalizeTableText(cell.textContent));
+  const miladiIndex = headers.findIndex((header) => header.includes("tarikh miladi"));
+  const eventIndex = headers.findIndex((header) => header.includes("hari perayaan") || header.includes("kebesaran islam"));
+
+  return [...table.querySelectorAll("tr")].map((row) => {
+    const cells = [...row.querySelectorAll("td")].map((cell) => cell.textContent.replace(/\s+/g, " ").trim());
+    const miladi = cells[miladiIndex >= 0 ? miladiIndex : 1];
+    const eventName = cells[eventIndex >= 0 ? eventIndex : 2];
+    if (!miladi || !eventName || !parseMalayDate(miladi)) return "";
+    return formatIslamicEvent(miladi, eventName);
+  });
+}
+
+function normalizeTableText(value = "") {
+  return value.replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function formatIslamicEvent(miladi, eventName) {
+  return `${miladi.trim()} | ${eventName.replace(/^\*/, "").trim()}`;
 }
 
 function applySlide() {
@@ -268,6 +351,9 @@ applySettings();
 startSlideshow();
 setInterval(tick, 1000);
 scheduleRefresh();
+loadIslamicEvents().catch((error) => {
+  elements.eventCountdown.textContent = `${error.message}. Guna tarikh manual.`;
+});
 loadPrayerTimes().catch((error) => {
   todayTimes = { ...settings.manualTimes };
   elements.syncStatus.textContent = `${error.message}. Fallback kepada waktu manual.`;
